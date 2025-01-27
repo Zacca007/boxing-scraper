@@ -22,6 +22,21 @@ class NetworkManager:
         'sesso': 'M'
     }
 
+    headers = {
+        "Host": "www.fpi.it",
+        "User-Agent": "Mozilla/5.0 (X11; Linux x86_64; rv:134.0) Gecko/20100101 Firefox/134.0",
+        "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+        "Accept-Language": "en-US,en;q=0.5",
+        "Accept-Encoding": "gzip, deflate, br, zstd",
+        "Referer": "https://www.google.com/",
+        "Connection": "keep-alive",
+        "Upgrade-Insecure-Requests": "1",
+        "Sec-Fetch-Dest": "document",
+        "Sec-Fetch-Mode": "navigate",
+        "Sec-Fetch-Site": "cross-site",
+        "Priority": "u=0, i"
+    }
+
     def __init__(self) -> None:
         self.session = self.initSession()
 
@@ -29,17 +44,17 @@ class NetworkManager:
     def initSession(self) -> req.Session:
         s = req.Session()
         try:
-            s.get(self.URL_ATLETI)
+            s.get(self.URL_ATLETI, headers=self.headers)
         except:
             s.verify = False
-            s.get(self.URL_ATLETI)
+            s.get(self.URL_ATLETI, headers=self.headers)
         return s
 
     #scraps available options and their relative int value from the HTML souce code
     def getComitati(self) -> dict[str, int]:
         if "comitati" in self.cache:
             return self.cache["comitati"]
-        response = self.session.get(self.URL_ATLETI)
+        response = self.session.get(self.URL_ATLETI, headers=self.headers)
         if response.status_code == 200:
             soup = BeautifulSoup(response.text, "html.parser")
             select_element = soup.find("select", id="id_comitato_atleti")
@@ -50,7 +65,7 @@ class NetworkManager:
         
     #scraps available options and their relative int value from the HTML souce code
     def getOptions(self, url: str) -> dict[str, int]:
-        response = self.session.get(url, params=self.payload)
+        response = self.session.get(url, params=self.payload, headers=self.headers)
         if response.status_code == 200:
             options_soup = BeautifulSoup(response.text, 'html.parser')
             options = {option.text: option["value"] for option in options_soup.find_all("option") if option['value']}
@@ -67,7 +82,7 @@ class NetworkManager:
             self.payload.pop("id_peso")
 
     def fetch_athletes(self, url: str) -> list:
-        response = self.session.post(url, params=self.payload)
+        response = self.session.post(url, params=self.payload, headers=self.headers)
         if response.status_code == 200:
             soup = BeautifulSoup(response.text, 'html.parser')
             return soup.find_all('div', class_='atleta')
@@ -76,7 +91,7 @@ class NetworkManager:
     def get_athlete_stats(self, matricola: str) -> dict[str, int]:
         if matricola in self.cache:
             return self.cache[matricola]
-        response = self.session.get(self.URL_STATISTICHE, params={'matricola': matricola})
+        response = self.session.get(self.URL_STATISTICHE, params={'matricola': matricola}, headers=self.headers)
         if response.status_code == 200:
             stats = BeautifulSoup(response.text, 'html.parser').find_all("td")
             statistiche = {
