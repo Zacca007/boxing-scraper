@@ -28,7 +28,7 @@ class Application:
         body.pack(fill="both", expand=True)
 
         #content occupied by the application
-        content = tk.Frame(body, width=1000, height=800, padx=10, pady=10, bg="blue")
+        content = tk.Frame(body, width=1000, height=800, padx=100, pady=75, bg="blue")
         content.place(relx=0.5, rely=0.5, anchor="center")
         content.pack_propagate(False)
 
@@ -56,7 +56,7 @@ class Application:
         #combobox for the first filter (italian regions)
         self.comitati_options = ttk.Combobox(content, values=list(self.comitati.keys()), state='readonly', width=30, font=DEFAULT_FONT)
         self.comitati_options.set(list(self.comitati.keys())[0])
-        self.comitati_options.pack(pady=10)
+        self.comitati_options.pack(pady=20)
         self.comitati_options.bind("<<ComboboxSelected>>", lambda event: self.__update_comitato(event))
 
         #combobox for the second filter (athlete's age)
@@ -108,7 +108,7 @@ class Application:
         net_manager.payload["qualifica"] = self.__set_value(selected_qualifica, self.qualifiche)
         if net_manager.payload["qualifica"] != 17:  #Schoolboy
             self.pesi = net_manager.getOptions(net_manager.URL_PESO)
-            self.pesi_options = ttk.Combobox(container, values=list(self.pesi.keys()), state='readonly', width=30, font=("sans serif", 10))
+            self.pesi_options = ttk.Combobox(container, values=list(self.pesi.keys()), state='readonly', width=30, font=DEFAULT_FONT)
             self.pesi_options.pack(pady=10)
             self.pesi_options.bind("<<ComboboxSelected>>", lambda event: self.__update_pesi(event))
 
